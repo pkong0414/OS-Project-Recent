@@ -1,20 +1,20 @@
 # This is a makefile for the logger.
 
 CC = gcc
-CFLAGS = -g.
+CFLAGS = -g
 TARGET = driver
 DEPS = log.h
 SRC = driver.c log.c
-OBJ = driver.o
+OBJS = driver.o
 
 %.o : %.c $(DEPS)
-  $(CC) -c -o $@ $< $(CFLAGS)
+	$(CC) -c -o $@ $< $(CFLAGS)
 
-driver: driver.o
-  $(CC) -o driver driver.o
+driver: $(OBJS)
+	$(CC) -o $@ $^ $(CFLAGS)
 
 .PHONY: clean
 clean:
-        rm *.o
+	/bin/rm '-f' *.o $(TARGET)
 
 
