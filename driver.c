@@ -31,7 +31,7 @@ int main(int argc, char **argv){
         }
     }
 
-    printf("optind=%d\n", optind);
+    //This will make it so that a filename that is entered will be the name of the error log without parameter args.
     errFileName = argv[optind];
     printf("log fileName: %s.log\n", errFileName);
 
