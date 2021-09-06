@@ -1,0 +1,3 @@
+README
+
+The first portion of the project will be about making logger. More details to come...
