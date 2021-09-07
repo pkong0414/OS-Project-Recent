@@ -3,17 +3,12 @@
 CC = gcc
 CFLAGS = -g
 TARGET = driver
-DEPS = log.h
-SRC = driver.c log.c
-OBJS = driver.o
+SRC = driver.c log.h
+OBJS = driver.o log.o
 
-%.o : %.c $(DEPS)
-	$(CC) -c -o $@ $< $(CFLAGS)
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) -o $(TARGET) $^
 
-driver: $(OBJS)
-	$(CC) -o $@ $^ $(CFLAGS)
-
-.PHONY: clean
 clean:
 	/bin/rm '-f' *.o $(TARGET)
 
