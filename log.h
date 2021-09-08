@@ -7,17 +7,17 @@
 #ifndef LOG_H
 #define LOG_H
 
-typedef struct data_struct
+typedef struct log_struct
 {
-    time_t time; // Time stamp
-    char type; // Message type (I/W/E/F)
-    char * string; // Message string
-} data_t;
+    time_t time;    // Time stamp
+    char type;      // Message type (I/W/E/F)
+    char *string;   // Message string
+} log;
 
 int addmsg(const char type, const char * msg);
 void clearlog();
 char *getlog();
-void getTime();
 int savelog( char * filename );
+time_t getTime();
 
 #endif
