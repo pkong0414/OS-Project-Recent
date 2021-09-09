@@ -87,20 +87,34 @@ char *getlog(){
     //and returns a pointer to the string. It is the responsibility of the calling program to free this memory when necessary.
     char *entireLog;
     // A successful getlog call returns a pointer to the log string;
-
+    char *logToAdd;
     //pointing at the head of the list
     log_list *nodePtr = head;
+    int requiredMem = 0;
     //using memoryCount to keep track of the total amount needed to allocate more memory
     int memoryCount = 0;
-    while(nodePtr != NULL){
+    logToAdd = (char*)malloc(30);
 
+    //testing 123
+    while(nodePtr != NULL){
+        requiredMem = sizeof(nodePtr->item.timestamp) + 4 + sizeof(nodePtr->item.messageLog)+4;
+        memoryCount += requiredMem;
+        printf( "current requiredMem: %d\n", requiredMem);
+        printf( "current memoryCount: %d\n", memoryCount);
+        //moving to the next node
+        nodePtr = nodePtr->next;
+    }
+    //after counting memory resetting nodePtr to head
+    nodePtr = head;
+    entireLog = malloc(memoryCount);
+    while(nodePtr != NULL){
         //allocating new memory for the string.
         // timestamp will always be 11 chars.
         // type will always be 1 char.
         // messageLog will have to be measured.
-        memoryCount += 11 + 1 + 1 + 2 + sizeof(nodePtr->item.messageLog)+3;
-        entireLog = malloc(memoryCount);
-        sprintf(entireLog, "%s %s: %s\n", nodePtr->item.timestamp, nodePtr->item.type, nodePtr->item.messageLog);
+        sprintf(logToAdd, "%s %c: %s\n", nodePtr->item.timestamp, nodePtr->item.type, nodePtr->item.messageLog);
+        strcat(entireLog, logToAdd);
+        printf("entireLog: %s\n", entireLog);
         //moving to the next node
         nodePtr = nodePtr->next;
     }
