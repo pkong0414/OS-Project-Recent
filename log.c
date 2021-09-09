@@ -17,23 +17,41 @@ int addmsg( char type, const char * msg ){
 
     // Since we are using this program in random for our cases
     // Message type as follows: ( 0:I/ 1:W/ 2:E/ 3:F )
-    printf("%c\n", type);
-    printf("%s\n", msg);
 
+    //initializing a new node
     log_list *newLog;
     //allocating memory to a new log
     newLog = malloc(sizeof(log_list));
 
-    // getting our seconds
+    if(newLog == NULL){
+        //return -1 if unsuccessful
+        printf("driver: ERROR description: %s\n", strerror(errno));
+        return -1;
+    }
+    // getting our total seconds
     time_t epoch_seconds;
     epoch_seconds = time(NULL);
-    printf( "%ld\n", epoch_seconds);
-    newLog->item.time = epoch_seconds;
+
+    // calculations will be performed such that we will have time in format of:
+    // HH:MM:SS
+    // To calculate hours we'll do (epoch_time / 3600) % 24
+    // To calculate minutes we'll do (epoch_time / 60) % 60
+    // To calculate seconds we'll do (epoch_time % 60)
+
+    // Hours needs to be -5 (we are cst local time and we are converting from UTC)
+    newLog->item.hours = ((epoch_seconds / 3600) % 24) - 5;
+    newLog->item.minutes = ((epoch_seconds / 60) % 60);
+    newLog->item.seconds = (epoch_seconds % 60);
+    newLog->item.timestamp = malloc(10*sizeof(char) + 1);
+
+    // converting the newly acquired time units into specified format of: HH:MM:SS for timestamp.
+    sprintf( newLog->item.timestamp, "[%02u:%02u:%02u]", newLog->item.hours, newLog->item.minutes, newLog->item.seconds);
+
     newLog->item.type = type;
     newLog->item.messageLog = malloc(strlen(msg) + 1);
     strcpy(newLog->item.messageLog, msg);
 
-    printf("%c: %s\n", newLog->item.type, newLog->item.messageLog);
+    //printf("log added: %s %c: %s\n", newLog->item.timestamp, newLog->item.type, newLog->item.messageLog);
 
     if(head == NULL){
         //attaching head to new node as usual
@@ -49,8 +67,6 @@ int addmsg( char type, const char * msg ){
     }
     //return 0 if successful
     return 0;
-
-    //return -1 if unsuccessful
 }
 
 void clearlog(){
@@ -72,6 +88,22 @@ char *getlog(){
     char *entireLog;
     // A successful getlog call returns a pointer to the log string;
 
+    //pointing at the head of the list
+    log_list *nodePtr = head;
+    //using memoryCount to keep track of the total amount needed to allocate more memory
+    int memoryCount = 0;
+    while(nodePtr != NULL){
+
+        //allocating new memory for the string.
+        // timestamp will always be 11 chars.
+        // type will always be 1 char.
+        // messageLog will have to be measured.
+        memoryCount += 11 + 1 + 1 + 2 + sizeof(nodePtr->item.messageLog)+3;
+        entireLog = malloc(memoryCount);
+        sprintf(entireLog, "%s %s: %s\n", nodePtr->item.timestamp, nodePtr->item.type, nodePtr->item.messageLog);
+        //moving to the next node
+        nodePtr = nodePtr->next;
+    }
 
     return entireLog;
     // it returns a NULL upon unsuccessful invocation.
@@ -82,29 +114,32 @@ int savelog( char *filename ){
     //The savelog function saves the logged message to a disk file.
 
     FILE *saveFile;
-
+    char *formattedTime;
     saveFile = fopen(filename, "w");
 
     if(saveFile == NULL){
 
         perror("driver: ERROR: Cannot open file.\n");
+        printf("driver: ERROR description: %s\n", strerror(errno));
         //return -1 if unsuccessful
         return -1;
     }
     else {
         //Now writing to file
 
-        // calculations will be performed such that we will have time in format of:
-        // HH:MM:SS
-        // To calculate hours we'll do (epoch_time / 3600) % 24
-        // To calculate minutes we'll do (epoch_time / 60) % 60
-        // To calculate seconds we'll do (epoch_time % 60)
-
-
+        // as long as there is a node we will write to file!
+        log_list *nodePtr = head;
+        while( nodePtr != NULL ){
+            fprintf( saveFile, "%s %c: %s\n", nodePtr->item.timestamp, nodePtr->item.type, nodePtr->item.messageLog);
+            nodePtr = nodePtr->next;
+        }
         //closing file
         if(fclose(saveFile) == -1){
             perror("driver: ERROR: Failed to close file.\n");
-            return -1;
+            printf("driver: ERROR description: %s\n", strerror(errno));
+
+            //exiting since file is unable to be closed
+            exit(EXIT_FAILURE);
         }
         else {
             //return 0 if successful

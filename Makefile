@@ -10,6 +10,6 @@ $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) -o $(TARGET) $^
 
 clean:
-	/bin/rm '-f' *.o $(TARGET)
+	/bin/rm '-f' *.o $(TARGET) *.log
 
 

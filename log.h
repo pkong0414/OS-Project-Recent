@@ -9,12 +9,14 @@
 
 typedef struct log_struct
 {
-    time_t time;    // Time stamp
-    char type;      // Message type (I/W/E/F)
+    //time isn't cutting it, especially if I want hh:mm:ss, gonna have to try something else instead
+    int hours;
+    int minutes;
+    int seconds;
+    char *timestamp;    // Timestamp
+    char type;          // Message type (I/W/E/F)
     char *messageLog;   // Message string
 } log_data;
-
-
 
 int addmsg( char type, const char * msg);
 void clearlog();

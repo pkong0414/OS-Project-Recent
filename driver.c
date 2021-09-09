@@ -7,13 +7,11 @@
 #include <string.h>
 #include "log.h"
 
-
-
 int main(int argc, char **argv){
 
     int opt, timeValue, i, randomError, totalLog;
-    char *errFileName= "message.log";
-    char *messageLog;
+    char *filename= "message.log";
+    char *messageLog, *entireLog;
     time_t t;
 
     timeValue = 1;
@@ -56,8 +54,8 @@ int main(int argc, char **argv){
     printf("optind: %d\n", optind);
     if(argc == 4 || argc == 2) {
         if (!isdigit(argv[optind][0])) {
-            errFileName = argv[optind];
-            strcat(errFileName,".log");
+            filename = argv[optind];
+            strcat(filename,".log");
         } else {
             //This case considers that a person entered a number of some kind or has a number before the letters.
             fprintf(stderr, "Filename must contain a letter of the alphabet first.\n");
@@ -65,7 +63,7 @@ int main(int argc, char **argv){
         }
     }
 
-    printf("log fileName: %s\n", errFileName);
+    printf("log fileName: %s\n", filename);
     int logging = 1;
 
     //We need to a report time because this will be in the interval of random ( 0 - 2 * timeValue ).
@@ -83,8 +81,6 @@ int main(int argc, char **argv){
     //initializing RNG
     srand((unsigned)time(&t));
 
-    //dataLog = (log_Data *)malloc( maxLogCount * sizeof(log_Data));
-
     while(logging){
 
         //We are getting our report time. This will give us the means to generate an average 0 - timeValue.
@@ -99,19 +95,55 @@ int main(int argc, char **argv){
 
         if(randomError == 0){
             messageLog = "Exceeded the number of threads.";
-            addmsg( 'I', messageLog);
+            if(addmsg( 'I', messageLog) == -1){
+                perror("driver: Unable to add a new log\n");
+            }
+            else {
+                printf("driver: log added!\n");
+            }
         }
         else if(randomError == 1){
             messageLog = "Not enough memory to allocate kernel structures.";
-            addmsg( 'W', messageLog);
+            if(addmsg( 'W', messageLog) == -1){
+                perror("driver: Unable to add a new log\n");
+            }
+            else {
+                printf("driver: log added!\n");
+            }
         }
         else if(randomError == 2){
             messageLog = "Parameter is invalid.";
-            addmsg( 'E', messageLog);
+            if(addmsg( 'E', messageLog) == -1){
+                perror("driver: Unable to add a new log\n");
+            }
+            else {
+                printf("driver: log added!\n");
+            }
         }
         else if(randomError == 3){
             messageLog = "Function not supported on this platform.";
-            addmsg( 'F', messageLog);
+            if(addmsg( 'F', messageLog) == -1){
+                perror("driver: Unable to add a new log\n");
+            }
+            else {
+                printf("driver: log added!\n");
+            }
+            //using getLog() before we wipe it clean
+            if((entireLog = getlog()) != NULL){
+                printf("%s", entireLog);
+            }
+            else {
+                perror("driver: ERROR: unable to get the entire log\n");
+            }
+            if( savelog(filename) != 0){
+                //savelog() returns either a 0 (success) or -1 (unsuccessful)
+                perror("save unsuccessful\n");
+            }
+            else {
+                printf("save successful\n");
+            }
+            clearlog();
+            exit(EXIT_SUCCESS);
         }
 
         totalLog += 1;
@@ -120,7 +152,13 @@ int main(int argc, char **argv){
             logging = 0;
         }
     }
-
+    //using getLog() before we wipe it clean
+    if((entireLog = getlog()) != NULL){
+        printf("%s", entireLog);
+    }
+    else {
+        perror("driver: ERROR: unable to get the entire log\n");
+    }
     //we will clear the log after finished using the log
     clearlog();
     exit(EXIT_SUCCESS);
