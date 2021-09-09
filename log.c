@@ -93,16 +93,10 @@ char *getlog(){
     int requiredMem = 0;
     //using memoryCount to keep track of the total amount needed to allocate more memory
     int memoryCount = 0;
-    int highestCount = 0;
 
-
-    //testing 123
     while(nodePtr != NULL){
         requiredMem = strlen(nodePtr->item.timestamp) + sizeof(nodePtr->item.type) + strlen(nodePtr->item.messageLog)+1;
         memoryCount += requiredMem;
-        if( highestCount < requiredMem ){
-            highestCount = requiredMem;
-        }
 
         //debugging output
         //printf( "current requiredMem: %d\n", requiredMem);
@@ -120,7 +114,7 @@ char *getlog(){
         // type will always be 1 char.
         // messageLog will have to be measured.
         requiredMem = strlen(nodePtr->item.timestamp) + sizeof(nodePtr->item.type) + strlen(nodePtr->item.messageLog)+1;
-        logToAdd = (char*)realloc(logToAdd, requiredMem = strlen(nodePtr->item.timestamp) + sizeof(nodePtr->item.type) + strlen(nodePtr->item.messageLog)+1);
+        logToAdd = (char*)realloc(logToAdd, requiredMem);
         sprintf(logToAdd, "%s %c: %s\n", nodePtr->item.timestamp, nodePtr->item.type, nodePtr->item.messageLog);
         strcat(entireLog, logToAdd);
         //moving to the next node
