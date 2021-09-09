@@ -66,6 +66,7 @@ int addmsg( char type, const char * msg ){
         tail = newLog;
     }
     //return 0 if successful
+
     return 0;
 }
 
@@ -106,15 +107,23 @@ char *getlog(){
     }
     //after counting memory resetting nodePtr to head
     nodePtr = head;
-    entireLog = (char*)malloc(memoryCount);
-    logToAdd = (char*)malloc(62);
+    if((entireLog = (char*)malloc(memoryCount)) == NULL){
+        // it returns a NULL upon unsuccessful invocation.
+        printf("driver: ERROR description: %s\n", strerror(errno));
+        return NULL;
+    }
+    if((logToAdd = (char*)malloc(64))== NULL){
+        // it returns a NULL upon unsuccessful invocation.
+        printf("driver: ERROR description: %s\n", strerror(errno));
+        return NULL;
+    }
     while(nodePtr != NULL){
-        //allocating new memory for the string.
-        // timestamp will always be 11 chars.
-        // type will always be 1 char.
-        // messageLog will have to be measured.
+        //reallocating the appropriate memory for logToAdd.
         requiredMem = strlen(nodePtr->item.timestamp) + sizeof(nodePtr->item.type) + strlen(nodePtr->item.messageLog)+1;
-        logToAdd = (char*)realloc(logToAdd, requiredMem);
+        if((logToAdd = (char*)realloc(logToAdd, requiredMem)) == NULL){
+            printf("driver: ERROR description: %s\n", strerror(errno));
+            return NULL;
+        }
         sprintf(logToAdd, "%s %c: %s\n", nodePtr->item.timestamp, nodePtr->item.type, nodePtr->item.messageLog);
         strcat(entireLog, logToAdd);
         //moving to the next node
@@ -124,9 +133,6 @@ char *getlog(){
     //freeing up logToAdd
     free(logToAdd);
     return entireLog;
-
-    // it returns a NULL upon unsuccessful invocation.
-    return NULL;
 }
 
 int savelog( char *filename ){

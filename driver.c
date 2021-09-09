@@ -83,8 +83,6 @@ int main(int argc, char **argv){
         //We are getting our report time. This will give us the means to generate an average 0 - timeValue.
         //We'll round down using floor and convert it to int before assigning to reportTime
         reportTime = rand() % randMax;
-
-        printf("reportTime: %d\n", reportTime);
         sleep(reportTime);
         //This will give us the random error log for this program
         randomError = rand() % 4;
@@ -145,9 +143,6 @@ int main(int argc, char **argv){
 
         totalLog += 1;
         logCount += 1;
-        if(totalLog == 10){
-            logging = 0;
-        }
     }
     //using getLog() before we wipe it clean
     if((entireLog = getlog()) != NULL){
