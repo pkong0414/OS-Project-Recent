@@ -1,17 +1,22 @@
 //driver.c
 
+#include <math.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include "log.h"
 
+
+
 int main(int argc, char **argv){
 
-    int opt, timeValue, i;
+    int opt, timeValue, i, randomError, totalLog;
     char *errFileName= "message.log";
-    log dataLog;
+    char *messageLog;
+    time_t t;
 
+    timeValue = 1;
     while((opt = getopt(argc, argv, "ht:")) != -1){
         switch(opt){
             case 'h':
@@ -33,6 +38,10 @@ int main(int argc, char **argv){
                 } else {
                     //-t is entered with an integer so we assign this to our timeValue.
                     timeValue = atoi(optarg);
+                    //timeValue cannot have a value of 0. This will prevent that case.
+                    if(timeValue <= 0){
+                        timeValue = 1;
+                    }
                     printf("timeValue: %d\n", timeValue);
                     break;
                 }
@@ -57,7 +66,63 @@ int main(int argc, char **argv){
     }
 
     printf("log fileName: %s\n", errFileName);
+    int logging = 1;
 
+    //We need to a report time because this will be in the interval of random ( 0 - 2 * timeValue ).
+    int reportTime = 0;
+
+    //totalLog will be different than logCount.
+    //totalLog will control the number of log that the program will process.
+    //logCount will control the number of logs to be stored before the program calls to erase.
+    totalLog = 0;
+    int logCount = 0;
+    int maxLogCount = 30;
+
+    int randMax = (2 * timeValue);
+
+    //initializing RNG
+    srand((unsigned)time(&t));
+
+    //dataLog = (log_Data *)malloc( maxLogCount * sizeof(log_Data));
+
+    while(logging){
+
+        //We are getting our report time. This will give us the means to generate an average 0 - timeValue.
+        //We'll round down using floor and convert it to int before assigning to reportTime
+        reportTime = rand() % randMax;
+
+        printf("reportTime: %d\n", reportTime);
+        sleep(reportTime);
+        //This will give us the random error log for this program
+        randomError = rand() % 4;
+        //now we'll handle adding the details to our datalog
+
+        if(randomError == 0){
+            messageLog = "Exceeded the number of threads.";
+            addmsg( 'I', messageLog);
+        }
+        else if(randomError == 1){
+            messageLog = "Not enough memory to allocate kernel structures.";
+            addmsg( 'W', messageLog);
+        }
+        else if(randomError == 2){
+            messageLog = "Parameter is invalid.";
+            addmsg( 'E', messageLog);
+        }
+        else if(randomError == 3){
+            messageLog = "Function not supported on this platform.";
+            addmsg( 'F', messageLog);
+        }
+
+        totalLog += 1;
+        logCount += 1;
+        if(totalLog == 10){
+            logging = 0;
+        }
+    }
+
+    //we will clear the log after finished using the log
+    clearlog();
     exit(EXIT_SUCCESS);
     return 0;
 }

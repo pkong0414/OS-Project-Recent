@@ -11,13 +11,14 @@ typedef struct log_struct
 {
     time_t time;    // Time stamp
     char type;      // Message type (I/W/E/F)
-    char *string;   // Message string
-} log;
+    char *messageLog;   // Message string
+} log_data;
 
-int addmsg(const char type, const char * msg);
+
+
+int addmsg( char type, const char * msg);
 void clearlog();
 char *getlog();
 int savelog( char * filename );
-time_t getTime();
 
 #endif
