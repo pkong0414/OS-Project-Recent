@@ -93,33 +93,44 @@ char *getlog(){
     int requiredMem = 0;
     //using memoryCount to keep track of the total amount needed to allocate more memory
     int memoryCount = 0;
-    logToAdd = (char*)malloc(30);
+    int highestCount = 0;
+
 
     //testing 123
     while(nodePtr != NULL){
-        requiredMem = sizeof(nodePtr->item.timestamp) + 4 + sizeof(nodePtr->item.messageLog)+4;
+        requiredMem = strlen(nodePtr->item.timestamp) + sizeof(nodePtr->item.type) + strlen(nodePtr->item.messageLog)+1;
         memoryCount += requiredMem;
-        printf( "current requiredMem: %d\n", requiredMem);
-        printf( "current memoryCount: %d\n", memoryCount);
+        if( highestCount < requiredMem ){
+            highestCount = requiredMem;
+        }
+
+        //debugging output
+        //printf( "current requiredMem: %d\n", requiredMem);
+        //printf( "current memoryCount: %d\n", memoryCount);
         //moving to the next node
         nodePtr = nodePtr->next;
     }
     //after counting memory resetting nodePtr to head
     nodePtr = head;
-    entireLog = malloc(memoryCount);
+    entireLog = (char*)malloc(memoryCount);
+    logToAdd = (char*)malloc(62);
     while(nodePtr != NULL){
         //allocating new memory for the string.
         // timestamp will always be 11 chars.
         // type will always be 1 char.
         // messageLog will have to be measured.
+        requiredMem = strlen(nodePtr->item.timestamp) + sizeof(nodePtr->item.type) + strlen(nodePtr->item.messageLog)+1;
+        logToAdd = (char*)realloc(logToAdd, requiredMem = strlen(nodePtr->item.timestamp) + sizeof(nodePtr->item.type) + strlen(nodePtr->item.messageLog)+1);
         sprintf(logToAdd, "%s %c: %s\n", nodePtr->item.timestamp, nodePtr->item.type, nodePtr->item.messageLog);
         strcat(entireLog, logToAdd);
-        printf("entireLog: %s\n", entireLog);
         //moving to the next node
         nodePtr = nodePtr->next;
     }
 
+    //freeing up logToAdd
+    free(logToAdd);
     return entireLog;
+
     // it returns a NULL upon unsuccessful invocation.
     return NULL;
 }

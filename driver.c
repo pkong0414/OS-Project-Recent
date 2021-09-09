@@ -2,6 +2,7 @@
 
 #include <math.h>
 #include <unistd.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -64,17 +65,13 @@ int main(int argc, char **argv){
     }
 
     printf("log fileName: %s\n", filename);
-    int logging = 1;
+    bool logging = true;
 
     //We need to a report time because this will be in the interval of random ( 0 - 2 * timeValue ).
     int reportTime = 0;
 
-    //totalLog will be different than logCount.
-    //totalLog will control the number of log that the program will process.
-    //logCount will control the number of logs to be stored before the program calls to erase.
     totalLog = 0;
     int logCount = 0;
-    int maxLogCount = 30;
 
     int randMax = (2 * timeValue);
 
