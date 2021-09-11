@@ -1,5 +1,6 @@
 //driver.c
 
+#include <ctype.h>
 #include <math.h>
 #include <unistd.h>
 #include <stdbool.h>
@@ -32,7 +33,7 @@ int main(int argc, char **argv){
                 if(!isdigit(argv[2][0])) {
                     //This case the user uses -t parameter but entered a string instead of an int.
                     printf("value entered: %s\n", argv[2]);
-                    fprintf(stderr, "ERROR: -t <seconds>\n");
+                    printf("%s: ERROR: -t <seconds>\n", argv[0]);
                     exit(EXIT_FAILURE);
                 } else {
                     //-t is entered with an integer so we assign this to our timeValue.
@@ -45,7 +46,7 @@ int main(int argc, char **argv){
                     break;
                 }
             default: /* '?' */
-                printf("ERROR: parameter not recognized.\n");
+                printf("%s: ERROR: parameter not recognized.\n", argv[0]);
                 fprintf(stderr, "Usage: %s [-h] [-t sec] [log filename]\n", argv[0]);
                 exit(EXIT_FAILURE);
         }
@@ -91,51 +92,56 @@ int main(int argc, char **argv){
         if(randomError == 0){
             messageLog = "Exceeded the number of threads.";
             if(addmsg( 'I', messageLog) == -1){
-                perror("driver: Unable to add a new log\n");
+                printf("%s: Unable to add a new log\n", argv[0]);
+                perror("ERROR");
             }
             else {
-                printf("driver: log added!\n");
+                printf("%s: log added!\n", argv[0]);
             }
         }
         else if(randomError == 1){
             messageLog = "Not enough memory to allocate kernel structures.";
             if(addmsg( 'W', messageLog) == -1){
-                perror("driver: Unable to add a new log\n");
+                printf("%s: Unable to add a new log\n", argv[0]);
+                perror("ERROR");
             }
             else {
-                printf("driver: log added!\n");
+                printf("%s: log added!\n", argv[0]);
             }
         }
         else if(randomError == 2){
             messageLog = "Parameter is invalid.";
             if(addmsg( 'E', messageLog) == -1){
-                perror("driver: Unable to add a new log\n");
+                printf("%s: Unable to add a new log\n", argv[0]);
+                perror("ERROR");
             }
             else {
-                printf("driver: log added!\n");
+                printf("%s: log added!\n", argv[0]);
             }
         }
         else if(randomError == 3){
             messageLog = "Function not supported on this platform.";
             if(addmsg( 'F', messageLog) == -1){
-                perror("driver: Unable to add a new log\n");
+                printf("%s: Unable to add a new log\n", argv[0]);
+                perror("ERROR");
             }
             else {
-                printf("driver: log added!\n");
+                printf("%s: log added!\n", argv[0]);
             }
             //using getLog() before we wipe it clean
             if((entireLog = getlog()) != NULL){
                 printf("%s", entireLog);
             }
             else {
-                perror("driver: ERROR: unable to get the entire log\n");
+                printf("%s: ERROR: unable to get the entire log\n", argv[0]);
+                perror("ERROR");
             }
             if( savelog(filename) != 0){
                 //savelog() returns either a 0 (success) or -1 (unsuccessful)
-                perror("save unsuccessful\n");
+                perror("save unsuccessful");
             }
             else {
-                printf("save successful\n");
+                printf("%s: save successful\n", argv[0]);
             }
             clearlog();
             exit(EXIT_SUCCESS);
@@ -149,7 +155,8 @@ int main(int argc, char **argv){
         printf("%s", entireLog);
     }
     else {
-        perror("driver: ERROR: unable to get the entire log\n");
+        printf("%s: ERROR: unable to get the entire log\n", argv[0]);
+        perror("ERROR");
     }
     //we will clear the log after finished using the log
     clearlog();

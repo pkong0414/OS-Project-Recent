@@ -25,7 +25,7 @@ int addmsg( char type, const char * msg ){
 
     if(newLog == NULL){
         //return -1 if unsuccessful
-        printf("driver: ERROR description: %s\n", strerror(errno));
+        printf("log.c: ERROR description: %s\n", strerror(errno));
         return -1;
     }
     // getting our total seconds
@@ -80,7 +80,7 @@ void clearlog(){
         free(head);
         head = ptr;
     }
-    printf("log cleared!\n");
+    printf("log.c: memory freed!\n");
 }
 
 char *getlog(){
@@ -109,19 +109,19 @@ char *getlog(){
     nodePtr = head;
     if((entireLog = (char*)malloc(memoryCount)) == NULL){
         // it returns a NULL upon unsuccessful invocation.
-        printf("driver: ERROR description: %s\n", strerror(errno));
+        printf("log.c: ERROR description: %s\n", strerror(errno));
         return NULL;
     }
     if((logToAdd = (char*)malloc(64))== NULL){
         // it returns a NULL upon unsuccessful invocation.
-        printf("driver: ERROR description: %s\n", strerror(errno));
+        printf("log.c: ERROR description: %s\n", strerror(errno));
         return NULL;
     }
     while(nodePtr != NULL){
         //reallocating the appropriate memory for logToAdd.
         requiredMem = strlen(nodePtr->item.timestamp) + sizeof(nodePtr->item.type) + strlen(nodePtr->item.messageLog)+1;
         if((logToAdd = (char*)realloc(logToAdd, requiredMem)) == NULL){
-            printf("driver: ERROR description: %s\n", strerror(errno));
+            printf("log.c: ERROR description: %s\n", strerror(errno));
             return NULL;
         }
         sprintf(logToAdd, "%s %c: %s\n", nodePtr->item.timestamp, nodePtr->item.type, nodePtr->item.messageLog);
@@ -143,9 +143,7 @@ int savelog( char *filename ){
     saveFile = fopen(filename, "w");
 
     if(saveFile == NULL){
-
-        perror("driver: ERROR: Cannot open file.\n");
-        printf("driver: ERROR description: %s\n", strerror(errno));
+        perror("log.c: ERROR");
         //return -1 if unsuccessful
         return -1;
     }
@@ -160,8 +158,7 @@ int savelog( char *filename ){
         }
         //closing file
         if(fclose(saveFile) == -1){
-            perror("driver: ERROR: Failed to close file.\n");
-            printf("driver: ERROR description: %s\n", strerror(errno));
+            perror("log.c: ERROR");
 
             //exiting since file is unable to be closed
             exit(EXIT_FAILURE);
