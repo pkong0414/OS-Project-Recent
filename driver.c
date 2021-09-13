@@ -2,6 +2,7 @@
 
 #include <ctype.h>
 #include <math.h>
+#include <errno.h>
 #include <unistd.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -53,9 +54,9 @@ int main(int argc, char **argv){
     }
 
     //This will make it so that a filename that is entered will be the name of the error log without parameter args.
-    printf("optind: %d\n", optind);
+    //printf("optind: %d\n", optind);
     if(argc == 4 || argc == 2) {
-        if (!isdigit(argv[optind][0])) {
+        if (isalpha(argv[optind][0])) {
             filename = argv[optind];
             strcat(filename,".log");
         } else {
@@ -86,14 +87,13 @@ int main(int argc, char **argv){
         reportTime = rand() % randMax;
         sleep(reportTime);
         //This will give us the random error log for this program
-        randomError = rand() % 4;
+        randomError = rand() % 5;
         //now we'll handle adding the details to our datalog
 
         if(randomError == 0){
             messageLog = "Exceeded the number of threads.";
             if(addmsg( 'I', messageLog) == -1){
                 printf("%s: Unable to add a new log\n", argv[0]);
-                perror("ERROR");
             }
             else {
                 printf("%s: log added!\n", argv[0]);
@@ -103,7 +103,6 @@ int main(int argc, char **argv){
             messageLog = "Not enough memory to allocate kernel structures.";
             if(addmsg( 'W', messageLog) == -1){
                 printf("%s: Unable to add a new log\n", argv[0]);
-                perror("ERROR");
             }
             else {
                 printf("%s: log added!\n", argv[0]);
@@ -113,7 +112,6 @@ int main(int argc, char **argv){
             messageLog = "Parameter is invalid.";
             if(addmsg( 'E', messageLog) == -1){
                 printf("%s: Unable to add a new log\n", argv[0]);
-                perror("ERROR");
             }
             else {
                 printf("%s: log added!\n", argv[0]);
@@ -123,7 +121,6 @@ int main(int argc, char **argv){
             messageLog = "Function not supported on this platform.";
             if(addmsg( 'F', messageLog) == -1){
                 printf("%s: Unable to add a new log\n", argv[0]);
-                perror("ERROR");
             }
             else {
                 printf("%s: log added!\n", argv[0]);
@@ -134,17 +131,24 @@ int main(int argc, char **argv){
             }
             else {
                 printf("%s: ERROR: unable to get the entire log\n", argv[0]);
-                perror("ERROR");
             }
             if( savelog(filename) != 0){
                 //savelog() returns either a 0 (success) or -1 (unsuccessful)
                 perror("save unsuccessful");
             }
             else {
-                printf("%s: save successful\n", argv[0]);
+                printf("%s: save successful.\n", argv[0]);
             }
             clearlog();
             exit(EXIT_SUCCESS);
+        }
+        else if(randomError == 4){
+            //this is a test case of bad error type
+            messageLog = "Just another error.";
+            if(addmsg('M', messageLog) == -1){
+                printf("%s: Unable to add a new log\n", argv[0]);
+            }
+
         }
 
         totalLog += 1;

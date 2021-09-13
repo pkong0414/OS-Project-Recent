@@ -3,6 +3,24 @@ README
 This is a logging program which will take in errors and display 
 the full log as well as save them into a .log file.
 ------------------------------------------------------------------
+
+To create the executable:
+
+type: make
+
+This will create the executable that you can invoke by using:
+
+./driver
+
+To clean the logs and anything else:
+
+type: make clean
+
+This will clean up the executable, as well as anything objects files
+and log files.
+
+------------------------------------------------------------------
+
 Instructions:
 ./driver [-h] [-t seconds] <filename>
 

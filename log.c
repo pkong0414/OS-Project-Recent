@@ -2,6 +2,9 @@
 
 #include <errno.h>
 #include <string.h>
+#include <time.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include "log.h"
 
 typedef struct list_struct {
@@ -16,7 +19,12 @@ int addmsg( char type, const char * msg ){
     // addmsg will add a message to the log
 
     // Since we are using this program in random for our cases
-    // Message type as follows: ( 0:I/ 1:W/ 2:E/ 3:F )
+    // Message type as follows: (I/ W/ E/ F). Anything else will result in an error.
+
+    if( (type != 'I') && (type != 'W') && (type != 'E') && (type != 'F')) {
+        fprintf(stderr, "log.c: Invalid type. %s\n", strerror(errno));
+        return -1;
+    }
 
     //initializing a new node
     log_list *newLog;
@@ -25,7 +33,7 @@ int addmsg( char type, const char * msg ){
 
     if(newLog == NULL){
         //return -1 if unsuccessful
-        printf("log.c: ERROR description: %s\n", strerror(errno));
+        fprintf(stderr, "log.c: ERROR description: %s\n", strerror(errno));
         return -1;
     }
     // getting our total seconds
@@ -164,6 +172,7 @@ int savelog( char *filename ){
             exit(EXIT_FAILURE);
         }
         else {
+            printf("File saved to: %s\n", filename);
             //return 0 if successful
             return 0;
         }

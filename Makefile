@@ -3,13 +3,11 @@
 CC = gcc
 CFLAGS = -g
 TARGET = driver
-SRC = driver.c log.h
-OBJS = driver.o log.o
+SRC = driver.c
+OBJS = driver.o
 
-$(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) -o $(TARGET) $^
+$(TARGET): $(SRC)
+	$(CC) $^ -L. -llog -o $(TARGET)
 
 clean:
 	/bin/rm '-f' *.o $(TARGET) *.log
-
-
